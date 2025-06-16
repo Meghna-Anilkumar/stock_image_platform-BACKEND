@@ -1,0 +1,21 @@
+export const MESSAGES = {
+    ALL_FIELDS_REQUIRED: "All fields are required",
+    PASSWORDS_DO_NOT_MATCH: "Passwords do not match",
+    USER_EXISTS: "User with this email or phone already exists",
+    INVALID_CREDENTIALS: "Invalid credentials",
+    USER_CREATED: "User created successfully",
+    LOGIN_SUCCESSFUL: "Login successful",
+    INTERNAL_SERVER_ERROR: "Internal server error",
+    INVALID_UPLOAD_DATA: "Invalid upload data",
+    UPLOAD_SUCCESSFUL: "Images uploaded successfully",
+    UPLOAD_NOT_FOUND: "Upload not found",
+    UPLOAD_UPDATED: "Upload updated successfully",
+    UPLOAD_DELETED: "Upload deleted successfully",
+    INVALID_ID: "Invalid upload ID",
+    INVALID_ORDER: "Invalid order data",
+    REORDER_SUCCESSFUL: "Uploads reordered successfully",
+    SUCCESS: "Success",
+    LOGOUT_SUCCESSFUL:'user logged out successfully',
+    NO_FILES_UPLOADED:'no files uploaded',
+    TITLE_FILE_MISMATCH:'title file mismatch'
+};

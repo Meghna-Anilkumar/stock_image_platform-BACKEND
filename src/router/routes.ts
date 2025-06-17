@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { signup, login, logout, refreshToken } from '../controllers/authController';
+import { signup, login, logout, refreshToken,resetPassword } from '../controllers/authController';
 import {
   bulkUpload,
   getUserUploads,
@@ -16,6 +16,7 @@ router.post('/signup', signup);
 router.post('/login', login);
 router.post('/logout', logout);
 router.post('/refresh-token', refreshToken);
+router.post('/reset-password',authMiddleware,resetPassword)
 
 router.post('/uploads', authMiddleware, uploadMiddleware, handleMulterErrors, bulkUpload);
 router.get('/uploads', authMiddleware, getUserUploads);

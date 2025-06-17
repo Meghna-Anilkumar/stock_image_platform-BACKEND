@@ -6,7 +6,7 @@ import { Types } from "mongoose";
 import { Cookie } from "../utils/Enum";
 import UserModel from "../models/userModel";
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: { _id: Types.ObjectId; email: string };
 }
 

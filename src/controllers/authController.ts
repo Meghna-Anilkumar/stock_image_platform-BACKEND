@@ -5,6 +5,7 @@ import { hashPassword, verifyPassword, generateTokens, verifyRefreshToken } from
 import { StatusCodes } from "../constants/statusCodes";
 import { MESSAGES } from "../constants/messages";
 import { Cookie } from "../utils/Enum";
+import { AuthenticatedRequest } from "../middlewares/authMiddleware";
 
 // Updated signup controller
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -205,3 +206,50 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     });
   }
 };
+
+
+export const resetPassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user?._id;
+
+    if (!userId) {
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: MESSAGES.INVALID_CREDENTIALS });
+      return;
+    }
+
+    if (!currentPassword || !newPassword) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.ALL_FIELDS_REQUIRED });
+      return;
+    }
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: 'usernot found' });
+      return;
+    }
+
+    const isPasswordValid = await verifyPassword(currentPassword, user.password);
+    if (!isPasswordValid) {
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: 'current password is wrong' });
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: 'invalid password fromat' });
+      return;
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(StatusCodes.OK).json({ message: 'password reset successfull' });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
+  }
+};
+
+

@@ -1,7 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-
-// Configure Cloudinary with validation
 const configureCloudinary = () => {
   const requiredEnvVars = {
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,11 +7,6 @@ const configureCloudinary = () => {
     api_secret: process.env.CLOUDINARY_API_SECRET,
   };
 
-  console.log('[cloudinary] Configuring Cloudinary:', {
-    cloud_name: requiredEnvVars.cloud_name,
-    api_key: requiredEnvVars.api_key ? '[HIDDEN]' : undefined,
-    api_secret: requiredEnvVars.api_secret ? '[HIDDEN]' : undefined,
-  });
 
   if (!requiredEnvVars.cloud_name || !requiredEnvVars.api_key || !requiredEnvVars.api_secret) {
     console.error('[cloudinary] Configuration failed. Missing environment variables:', {
@@ -28,15 +21,14 @@ const configureCloudinary = () => {
     cloud_name: requiredEnvVars.cloud_name,
     api_key: requiredEnvVars.api_key,
     api_secret: requiredEnvVars.api_secret,
-    secure: true, // Ensure HTTPS
+    secure: true, 
   });
 
   console.log('[cloudinary] Configuration successful.');
 };
 
-// Upload image to Cloudinary
+
 export const uploadToCloudinary = async (image: string): Promise<{ secure_url: string; public_id: string }> => {
-  // Configure Cloudinary before upload
   configureCloudinary();
 
   console.log('[cloudinary] Uploading image:', { dataLength: image.length });
@@ -62,9 +54,8 @@ export const uploadToCloudinary = async (image: string): Promise<{ secure_url: s
   }
 };
 
-// Delete image from Cloudinary
+
 export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
-  // Configure Cloudinary before delete
   configureCloudinary();
 
   console.log('[cloudinary] Deleting image:', { publicId });

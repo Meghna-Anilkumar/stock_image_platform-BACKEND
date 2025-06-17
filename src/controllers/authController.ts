@@ -7,11 +7,11 @@ import { MESSAGES } from "../constants/messages";
 import { Cookie } from "../utils/Enum";
 import { AuthenticatedRequest } from "../middlewares/authMiddleware";
 
-// Updated signup controller
+
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, phone, email, password, confirmPassword } = req.body as ISignupInput;
-    
+
     if (!name || !phone || !email || !password || !confirmPassword) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.ALL_FIELDS_REQUIRED });
       return;
@@ -41,17 +41,16 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     const { accessToken, refreshToken } = generateTokens(user._id, user.email);
 
-    // Set both tokens as cookies
     res.cookie(Cookie.userJWT, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(StatusCodes.CREATED).json({
@@ -72,7 +71,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// Updated login controller
+
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, phone, password } = req.body as ILoginInput;
@@ -99,17 +98,16 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const { accessToken, refreshToken } = generateTokens(user._id, user.email);
 
-    // Set both tokens as cookies
     res.cookie(Cookie.userJWT, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(StatusCodes.OK).json({
@@ -130,7 +128,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// Updated logout controller
+
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
     res.clearCookie(Cookie.userJWT, {
@@ -148,13 +146,12 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// Fixed refresh token controller
+
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
   try {
-    const refreshToken = req.cookies.refreshToken; // Use refresh token, not access token
-    
+    const refreshToken = req.cookies.refreshToken;
+
     if (!refreshToken) {
-      console.log('❌ No refresh token found');
       res.status(StatusCodes.UNAUTHORIZED).json({
         success: false,
         message: MESSAGES.INVALID_CREDENTIALS
@@ -162,13 +159,11 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    console.log('🔍 Verifying refresh token...');
     const decoded = await verifyRefreshToken(refreshToken);
-    
+
     const user = await UserModel.findById(decoded.userId);
 
     if (!user) {
-      console.log('❌ User not found for refresh token');
       res.status(StatusCodes.UNAUTHORIZED).json({
         success: false,
         message: MESSAGES.INVALID_CREDENTIALS
@@ -176,23 +171,20 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // Generate new tokens
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user._id, user.email);
 
-    // Set new tokens as cookies
     res.cookie(Cookie.userJWT, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log('✅ Tokens refreshed successfully');
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'Token refreshed',

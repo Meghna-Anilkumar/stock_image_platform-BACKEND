@@ -4,13 +4,6 @@ import app from './app';
 
 dotenv.config();
 
-const dotenvResult = dotenv.config();
-if (dotenvResult.error) {
-  console.error('[server] Failed to load .env file:', dotenvResult.error);
-} else {
-  console.log('[server] .env file loaded successfully');
-}
-
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
 

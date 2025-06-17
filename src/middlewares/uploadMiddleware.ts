@@ -2,41 +2,38 @@ import multer from 'multer';
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from '../constants/statusCodes';
 
-// Configure storage (in-memory for Cloudinary upload)
+
 const storage = multer.memoryStorage();
 
-// File filter to accept only images
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  console.log('[uploadMiddleware] Processing file:', { originalname: file.originalname, mimetype: file.mimetype });
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    console.log('[uploadMiddleware] Invalid file type:', file.mimetype);
     cb(new Error('Only image files are allowed'));
   }
 };
 
-// Multer configuration for multiple files
+
 export const uploadMiddleware = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB per file
-    files: 10, // Max 10 files per request
-    fieldSize: 1024 * 1024, // 1MB for fields (e.g., titles)
+    fileSize: 10 * 1024 * 1024, 
+    files: 10, 
+    fieldSize: 1024 * 1024,
   },
   fileFilter,
-}).array('images', 10); // Field name 'images', max 10 files
+}).array('images', 10); 
 
-// Multer configuration for single file (edit upload)
+
 export const singleUploadMiddleware = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB per file
+    fileSize: 10 * 1024 * 1024, 
   },
   fileFilter,
-}).single('image'); // Field name 'image' for edit
+}).single('image'); 
 
-// Error handling middleware for multer
+
 export const handleMulterErrors = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError) {
     console.error('[uploadMiddleware] Multer error:', err.message, { code: err.code });

@@ -39,20 +39,6 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     await user.save();
 
-    const { accessToken, refreshToken } = generateTokens(user._id, user.email);
-
-    res.cookie(Cookie.userJWT, accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
     res.status(StatusCodes.CREATED).json({
       message: MESSAGES.USER_CREATED,
       user: {
@@ -62,7 +48,6 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         phone: user.phone,
         dob: user.dob,
       },
-      token: accessToken,
       redirectUrl: '/login'
     });
   } catch (error) {
@@ -98,15 +83,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const { accessToken, refreshToken } = generateTokens(user._id, user.email);
 
-    res.cookie(Cookie.userJWT, accessToken, {
+    res.cookie(Cookie.userToken, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: 'none',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -131,7 +118,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
-    res.clearCookie(Cookie.userJWT, {
+    res.clearCookie(Cookie.userToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
@@ -173,7 +160,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
 
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user._id, user.email);
 
-    res.cookie(Cookie.userJWT, accessToken, {
+    res.cookie(Cookie.userToken, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,

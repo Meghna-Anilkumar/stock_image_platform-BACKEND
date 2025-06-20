@@ -1,4 +1,4 @@
 export enum Cookie {
-  userJWT = 'userJWT',
-  userRefreshJWT = "userRefreshJWT"
+  userToken = 'userToken',
+  userRefreshToken = "userRefreshToken"
 }
